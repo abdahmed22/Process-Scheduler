@@ -1,0 +1,6 @@
+#At time x process y state arr w total z remain y wait k
+At time 11 process 1 finished arr 1 total 0 remain 0 wait 10.00 TA 10.00 WTA inf
+At time 16 process 2 finished arr 10 total 0 remain 0 wait 6.00 TA 6.00 WTA inf
+At time 26 process 3 finished arr 20 total 0 remain 0 wait 6.00 TA 6.00 WTA inf
+At time 31 process 4 finished arr 23 total 0 remain 0 wait 8.00 TA 8.00 WTA inf
+At time 35 process 5 finished arr 34 total 0 remain 0 wait 1.00 TA 1.00 WTA inf
