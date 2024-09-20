@@ -1,7 +1,7 @@
 #include "headers.h"
 
- int NumberofProcesses;
- int SendingQueue;
+int NumberofProcesses;
+int SendingQueue;
 void clearResources(int);
 int numberofProcesses(char* file_name);//this function is to get the number of processes inside the text file
 
@@ -10,15 +10,14 @@ int numberofProcesses(char* file_name);//this function is to get the number of p
 int main(int argc, char * argv[])
 {
     signal(SIGINT, clearResources);
-    // TODO Initialization
 //============================= creating ProcesssTable Matrix =========================================================
     //getting the number of processes inside the processes table
 
-      int rows=numberofProcesses("processes.txt");
-      NumberofProcesses=rows;
+    int rows=numberofProcesses("processes.txt");
+    NumberofProcesses=rows;
 
-    //number of columns of the process table is 4 which are the id and arrival and run time and the priority
-      int columns=4;
+    //number of columns of the process table is 5 which are the id and arrival and run time, priority ana memory size
+    int columns=5;
 
     //creating the process table matrix that will be filled from the text file
     int ProcessTable[rows][columns];
@@ -46,20 +45,21 @@ int main(int argc, char * argv[])
 
     // Read and print each line until end of file is reached
     while (fgets(line, sizeof(line), file_ptr) != NULL) {
-        int id, arrival, runtime, priority;
-        sscanf(line, "%d %d %d %d", &id, &arrival, &runtime, &priority); // parse each number alone form the read line
+        int id, arrival, runtime, priority, memsize;
+        sscanf(line, "%d %d %d %d %d", &id, &arrival, &runtime, &priority, &memsize); // parse each number alone form the read line
         ProcessTable[RowNumber][0] = id;
         ProcessTable[RowNumber][1] = arrival;
         ProcessTable[RowNumber][2] = runtime;
         ProcessTable[RowNumber][3] = priority;
-
+        ProcessTable[RowNumber][4] = memsize;
         //after reading a row from the file read from the next row
         RowNumber++;
     }
 
 //    for(int i=0;i<rows;i++)
 //     {
-//         printf("%d  %d  %d  %d\n",ProcessTable[i][0],ProcessTable[i][1],ProcessTable[i][2],ProcessTable[i][3]);
+//         printf("%d  %d  %d  %d  %d\n", ProcessTable[i][0], ProcessTable[i][1],
+//         ProcessTable[i][2], ProcessTable[i][3], ProcessTable[i][4]);
 //     }
 
     // Close the file
@@ -107,14 +107,21 @@ int main(int argc, char * argv[])
     }
     else
     {
+        
         SCHid = fork();
         char algorithmNumChar[sizeof(int)];
         sprintf(algorithmNumChar, "%d", algorithmNum);//to convert the choosen algorithm number into string
 
         char quantumNumChar[sizeof(int)];
         sprintf(quantumNumChar, "%d", quantumNum);
+
+        char Process_generator_ID[sizeof(getpid())];
+        sprintf(Process_generator_ID, "%d", getpid());
+
+        char NumberofProcessesChar[sizeof(int)];
+        sprintf(NumberofProcessesChar, "%d", NumberofProcesses);
         if (SCHid == 0) {
-            return execl(SCHEDULER_PATH, "scheduler.out", &algorithmNumChar,&quantumNumChar, NULL);
+            return execl(SCHEDULER_PATH, "scheduler.out", &algorithmNumChar,&quantumNumChar,&Process_generator_ID,&NumberofProcessesChar, NULL);
         }
     }
 //========================================================================================================================
@@ -123,14 +130,13 @@ int main(int argc, char * argv[])
     // To get time use this
     int x = getClk();
     printf("current time is %d\n", x);
-    // TODO Generation Main Loop
 
-for(int i=0;i<rows;i++)
- {
-         printf("%d  %d  %d  %d\n",ProcessTable[i][0],ProcessTable[i][1],ProcessTable[i][2],ProcessTable[i][3]);
-           }
+   for(int i=0;i<rows;i++)
+    {
+        printf("%d  %d  %d  %d  %d\n", ProcessTable[i][0], ProcessTable[i][1],
+        ProcessTable[i][2], ProcessTable[i][3], ProcessTable[i][4]);
+    }
 
-    //code stops here, if you prinf after current time its is not displayed
 
 
 
@@ -151,7 +157,10 @@ for(int i=0;i<rows;i++)
        Processes[i].Priority = ProcessTable[i][3];
 
        Processes[i].State = 0;
+
+       Processes[i].Memsize = ProcessTable[i][4];
     }
+
      // 6. Send the information to the scheduler at the appropriate time.(need to share memory or to communicate with the scheduler generally to send the process at the proper time)
         //i will send all the process to the scheduler and the scheduler suppose to store them in the ready queue using shared queue
 
@@ -166,22 +175,25 @@ for(int i=0;i<rows;i++)
         while(counter != NumberofProcesses)
         {
             int CurrentTime=getClk();//current time
-            //know the next arrival time for a process
-            int ComingProcessTime = Processes[counter].ArrivalTime;
-            int WaitingNextProcess = ComingProcessTime - CurrentTime;//the waiting time till the next process arrives
-            sleep(WaitingNextProcess);
+            int ComingProcessTime = Processes[counter].ArrivalTime;     //know the next arrival time for a process
+            int WaitingNextProcess = ComingProcessTime - CurrentTime;   //the waiting time till the next process arrives
+
+            if(algorithmNum == 1)
+                sleep(WaitingNextProcess-0.4);
+            else
+                sleep(WaitingNextProcess);
 
             msgProcess.Process = Processes[counter];
             msgProcess.mtype=1;
             int send_val = msgsnd(SendingQueue, &msgProcess, sizeof(msgProcess.Process), !IPC_NOWAIT);
-            printf("message sent id =%d\n",msgProcess.Process.ID);
+            printf("the message has been sent\n");
+
+
             counter++;
         }
-        //after sending all the processes i need to let the scheduler know so i will send in the message queue a process with id=-1
-        struct Process TempProcess;
-        TempProcess.ID=-1;
-        msgProcess.Process=TempProcess;
-        int send_val = msgsnd(SendingQueue, &msgProcess, sizeof(msgProcess.Process), !IPC_NOWAIT);
+
+        kill(SCHid, SIGUSR1);
+
 
 
     // 7. Clear clock resources
@@ -230,8 +242,9 @@ for(int i=0;i<rows;i++)
 
 void clearResources(int signum)
 {
-    printf("process generator terminates");
+    printf("process generator is clearing resources now...\n");
     msgctl(SendingQueue, IPC_RMID, NULL);
     destroyClk(true);
     kill(getpid(), SIGKILL);
+
 }

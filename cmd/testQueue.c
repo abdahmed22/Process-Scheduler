@@ -10,7 +10,6 @@ int main()
     5	24	2	6  */
     struct Process* p1;
     p1=(struct Process*)malloc(sizeof(struct Process));
-    strcpy(p1->state,"running");
     p1->ID = 1;
     p1->ArrivalTime = 2;
     p1->RunTime = 14;
@@ -19,7 +18,6 @@ int main()
 
     struct Process* p2;
     p2=(struct Process*)malloc(sizeof(struct Process));
-    strcpy(p2->state,"ready");
     p2->ID = 2;
     p2->ArrivalTime = 10;
     p2->RunTime = 17;
@@ -28,7 +26,6 @@ int main()
 
     struct Process*  p3;
     p3=(struct Process*)malloc(sizeof(struct Process));
-    strcpy(p3->state,"ready");
     p3->ID = 3;
     p3->ArrivalTime = 16;
     p3->RunTime = 14;
@@ -37,7 +34,6 @@ int main()
 
     struct Process*  p4;
     p4=(struct Process*)malloc(sizeof(struct Process));
-    strcpy(p4->state,"ready");
     p4->ID = 4;
     p4->ArrivalTime = 16;
     p4->RunTime = 18;
@@ -46,7 +42,6 @@ int main()
 
     struct Process*  p5;
     p5=(struct Process*)malloc(sizeof(struct Process));
-    strcpy(p5->state,"ready");
     p5->ID = 5;
     p5->ArrivalTime = 24;
     p5->RunTime = 2;
@@ -69,7 +64,6 @@ int main()
 
     printProcess(Dequeue(&CPQptr,insertionFactor));
     printQueue(&CPQptr);
-    //printProcess(PeekFront(&CPQptr));
 
     printProcess(Dequeue(&CPQptr,insertionFactor));
     printQueue(&CPQptr);
