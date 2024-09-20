@@ -1,0 +1,16 @@
+# Binary files #
+*
+!*.*
+!*/
+*.out
+bin/
+
+# Testing file #
+*.txt
+
+# output files #
+*.perf
+*.log
+
+# Coverage file
+

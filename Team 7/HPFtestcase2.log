@@ -1,9 +1,0 @@
-#At time x process y state arr w total z remain y wait k
-At time 13 process 1 finished arr 1 total 0 remain 0 wait 12.00 TA 12.00 WTA inf
-At time 21 process 3 finished arr 12 total 0 remain 0 wait 9.00 TA 9.00 WTA inf
-At time 27 process 6 finished arr 21 total 0 remain 0 wait 6.00 TA 6.00 WTA inf
-At time 37 process 4 finished arr 16 total 0 remain 0 wait 21.00 TA 21.00 WTA inf
-At time 42 process 7 finished arr 28 total 0 remain 0 wait 14.00 TA 14.00 WTA inf
-At time 46 process 5 finished arr 19 total 0 remain 0 wait 27.00 TA 27.00 WTA inf
-At time 51 process 2 finished arr 10 total 0 remain 0 wait 41.00 TA 41.00 WTA inf
-At time 55 process 8 finished arr 30 total 0 remain 0 wait 25.00 TA 25.00 WTA inf
